@@ -197,71 +197,75 @@ local PRESETS = {
     },
 }
 
--- Small schematic icons, drawn with flat colour blocks. No game art.
--- Each part is x, y, w, h and a colour, inside a 36 by 18 box.
-local BOSS = { 0.72, 0.58, 0.32, 1 }
-local NAME = { 0.82, 0.76, 0.66, 1 }
-local HEALTH = { 0.55, 0.62, 0.38, 1 }
-local POWER = { 0.28, 0.48, 0.72, 1 }
-local GLOW = { 0.86, 0.78, 0.62, 1 }
+-- Outline glyphs inside a 36 by 18 box. Each part is a 1px stroke:
+-- x, y, w, h and a colour. No filled blocks, no game art.
+local GLYPH = { 0.78, 0.72, 0.62, 1 }
 
-local function block(x, y, w, h, color)
-    return { x, y, w, h, color[1], color[2], color[3], color[4] }
+local function edge(x, y, w, h)
+    return { x, y, w, h, GLYPH[1], GLYPH[2], GLYPH[3], GLYPH[4] }
+end
+
+local function addEdge(list, x, y, w, h)
+    list[#list + 1] = edge(x, y, w, h)
+end
+
+local function addBox(list, x, y, w, h)
+    addEdge(list, x, y, w, 1)
+    addEdge(list, x, y + h - 1, w, 1)
+    addEdge(list, x, y, 1, h)
+    addEdge(list, x + w - 1, y, 1, h)
 end
 
 local ICONS = {
-    lintel = {
-        block(1, 5, 8, 8, BOSS),
-        block(11, 2, 23, 4, NAME),
-        block(11, 8, 23, 8, HEALTH),
-    },
-    sill = {
-        block(1, 3, 8, 8, BOSS),
-        block(11, 2, 14, 4, NAME),
-        block(11, 8, 23, 6, HEALTH),
-        block(11, 15, 23, 2, POWER),
-    },
-    stamp = {
-        block(1, 6, 6, 6, BOSS),
-        block(9, 2, 25, 3, NAME),
-        block(9, 7, 25, 4, HEALTH),
-        block(9, 13, 25, 2, POWER),
-    },
-    trestle = {
-        block(1, 2, 12, 12, BOSS),
-        block(15, 2, 19, 4, NAME),
-        block(15, 8, 19, 5, HEALTH),
-        block(15, 15, 19, 2, POWER),
-    },
-    flagon = {
-        block(1, 4, 7, 7, BOSS),
-        block(10, 1, 24, 3, NAME),
-        block(10, 5, 24, 12, HEALTH),
-    },
-    signboard = {
-        block(1, 1, 12, 12, BOSS),
-        block(15, 1, 19, 11, NAME),
-        block(15, 14, 19, 2, HEALTH),
-    },
-    trough = {
-        block(1, 2, 12, 12, BOSS),
-        block(15, 3, 19, 3, HEALTH),
-        block(15, 8, 19, 8, POWER),
-    },
-    wick = {
-        block(2, 2, 4, 4, GLOW),
-        block(30, 2, 4, 4, GLOW),
-        block(2, 12, 4, 4, GLOW),
-        block(30, 12, 4, 4, GLOW),
-    },
-    draught = {
-        block(2, 2, 32, 4, GLOW),
-    },
-    latch = {
-        block(2, 2, 3, 14, GLOW),
-        block(2, 2, 12, 3, GLOW),
-    },
+    lintel = {}, sill = {}, stamp = {}, trestle = {}, flagon = {},
+    signboard = {}, trough = {}, wick = {}, draught = {}, latch = {},
 }
+
+addBox(ICONS.lintel, 1, 5, 8, 8)
+addEdge(ICONS.lintel, 12, 6, 14, 1)
+addBox(ICONS.lintel, 11, 9, 23, 7)
+
+addBox(ICONS.sill, 1, 3, 7, 7)
+addEdge(ICONS.sill, 11, 4, 12, 1)
+addBox(ICONS.sill, 11, 7, 23, 6)
+addEdge(ICONS.sill, 11, 15, 23, 1)
+
+addBox(ICONS.stamp, 1, 6, 6, 6)
+addEdge(ICONS.stamp, 10, 3, 22, 1)
+addBox(ICONS.stamp, 10, 6, 24, 5)
+addEdge(ICONS.stamp, 10, 13, 24, 1)
+
+addBox(ICONS.trestle, 1, 2, 11, 12)
+addEdge(ICONS.trestle, 15, 4, 18, 1)
+addBox(ICONS.trestle, 15, 7, 19, 5)
+addEdge(ICONS.trestle, 15, 14, 19, 1)
+
+addBox(ICONS.flagon, 1, 5, 6, 6)
+addEdge(ICONS.flagon, 10, 3, 22, 1)
+addBox(ICONS.flagon, 10, 6, 24, 10)
+
+addBox(ICONS.signboard, 1, 2, 10, 10)
+addBox(ICONS.signboard, 14, 2, 20, 10)
+addEdge(ICONS.signboard, 14, 14, 20, 1)
+
+addBox(ICONS.trough, 1, 2, 10, 12)
+addBox(ICONS.trough, 14, 2, 20, 4)
+addBox(ICONS.trough, 14, 8, 20, 8)
+
+addBox(ICONS.wick, 1, 1, 34, 16)
+addEdge(ICONS.wick, 3, 3, 3, 1)
+addEdge(ICONS.wick, 30, 3, 3, 1)
+addEdge(ICONS.wick, 3, 14, 3, 1)
+addEdge(ICONS.wick, 30, 14, 3, 1)
+
+addBox(ICONS.draught, 1, 1, 34, 16)
+addEdge(ICONS.draught, 4, 3, 28, 1)
+addEdge(ICONS.draught, 6, 5, 24, 1)
+
+addBox(ICONS.latch, 1, 1, 34, 16)
+addEdge(ICONS.latch, 4, 3, 1, 12)
+addEdge(ICONS.latch, 4, 3, 8, 1)
+addEdge(ICONS.latch, 4, 14, 8, 1)
 
 local ORDER = {}
 for i = 1, #FRAMES do ORDER[#ORDER + 1] = FRAMES[i] end
@@ -424,10 +428,26 @@ local function readSetting(scope, path)
     return value, true
 end
 
--- Taken the first time Looks changes a style. Restore writes these back.
--- A missing read stays empty, and Restore uses Daylight's own default for it.
--- Nil means Looks has not changed anything yet.
-local original
+-- Saved in LooksDB so a /reload still has it. Taken once, the first time a
+-- Looks write sticks. Restore clears it after both the frame and the glow
+-- writes stick. A missing read stays empty, and Restore uses Daylight's
+-- default for that one.
+local function snapshot()
+    if type(LooksDB) ~= "table" then return nil end
+    local saved = LooksDB.original
+    if type(saved) ~= "table" then return nil end
+    return saved
+end
+
+local function keepSnapshot(shot)
+    if snapshot() or type(shot) ~= "table" then return end
+    if type(LooksDB) ~= "table" then LooksDB = {} end
+    LooksDB.original = shot
+end
+
+local function clearSnapshot()
+    if type(LooksDB) == "table" then LooksDB.original = nil end
+end
 
 local function readKnown(scope, path)
     local value, ok = readSetting(scope, path)
@@ -456,13 +476,15 @@ local function readFrameStyle()
     return parts.style, true
 end
 
-local function remember()
-    if original then return end
+-- Read before the write. Nil when a snapshot is already saved, or when
+-- none of the three settings can be read.
+local function capture()
+    if snapshot() then return nil end
     local frame, frameOk = readFrameStyle()
     local glow, glowOk = readKnown("general", "buttonGlow")
     local light, lightOk = readKnown("Nameplates", "targetLight")
-    if not frameOk and not glowOk and not lightOk then return end
-    original = {
+    if not frameOk and not glowOk and not lightOk then return nil end
+    return {
         frame = frameOk and frame or nil,
         glow = glowOk and glow or nil,
         light = lightOk and light or nil,
@@ -535,6 +557,21 @@ local function pointAtGlow(id)
     say("Looks: pick " .. (found and found.name or id) .. " in the glow menu.")
 end
 
+-- The glow Restore tried to write. A Looks key uses its name. Anything else
+-- is named as stored, so a saved "comet" is not reported as none.
+local function pointAtGlowValue(value)
+    if type(value) ~= "string" or value == "" or value == "none" then
+        pointAtGlow("none")
+        return
+    end
+    local id = looksId(value)
+    if id then
+        pointAtGlow(id)
+        return
+    end
+    say("Looks: pick " .. value .. " in the glow menu.")
+end
+
 local function frameKey(id)
     if id == "daylight" then return "daylight" end
     return "Looks:" .. id
@@ -545,13 +582,15 @@ end
 -- settings Looks found, not the style it is about to put on.
 local function applyFrame(id, quiet)
     local set = frameSetter()
-    if set or hasMenuStyle() or hasWrite() then remember() end
+    local shot = (set or hasMenuStyle() or hasWrite()) and capture() or nil
     if set and pcall(set, id) then
+        keepSnapshot(shot)
         refreshPage()
         return true
     end
     local key = frameKey(id)
     if menuSetStyle(key) or writeSetting("UnitFrames", "look.style", key) then
+        keepSnapshot(shot)
         refreshPage()
         return true
     end
@@ -563,8 +602,9 @@ end
 -- A Cooldown Manager spell keeps its own glowStyle, so Looks does not walk spells.
 local function applyGlow(id, quiet)
     local set = glowSetter()
-    if set or hasWrite() then remember() end
+    local shot = (set or hasWrite()) and capture() or nil
     if set and pcall(set, id) then
+        keepSnapshot(shot)
         refreshPage()
         return true
     end
@@ -576,10 +616,14 @@ local function applyGlow(id, quiet)
     end
     local buttons = writeSetting("general", "buttonGlow", buttonKey)
     local light = writeSetting("Nameplates", "targetLight", lightKey)
-    if buttons or light then
+    -- Both have to stick. One of them still counts as a write, so the
+    -- snapshot is kept, and the menu line tells the player the other one.
+    if buttons or light then keepSnapshot(shot) end
+    if buttons and light then
         refreshPage()
         return true
     end
+    if buttons or light then refreshPage() end
     if not quiet then pointAtGlow(id) end
     return false
 end
@@ -603,11 +647,13 @@ end
 local function writeGlowValue(buttonValue, lightValue)
     local buttons = writeSetting("general", "buttonGlow", buttonValue)
     local light = writeSetting("Nameplates", "targetLight", lightValue)
-    if buttons or light then return true end
-    local set = glowSetter()
-    if set and buttonValue == lightValue then
-        local id = buttonValue == "none" and "none" or looksId(buttonValue)
-        if id and (id == "none" or glowById(id)) and pcall(set, id) then return true end
+    if buttons and light then return true end
+    if not buttons and not light then
+        local set = glowSetter()
+        if set and buttonValue == lightValue then
+            local id = buttonValue == "none" and "none" or looksId(buttonValue)
+            if id and (id == "none" or glowById(id)) and pcall(set, id) then return true end
+        end
     end
     return false
 end
@@ -632,19 +678,21 @@ local function restore()
         say(refused or TOO_OLD)
         return
     end
+    local saved = snapshot()
     local frame = DAYLIGHT_FRAME
     local glow = DAYLIGHT_GLOW
     local light = DAYLIGHT_LIGHT
-    if original then
-        if original.frame ~= nil then frame = original.frame end
-        if original.glow ~= nil then glow = original.glow end
-        if original.light ~= nil then light = original.light end
+    if saved then
+        if saved.frame ~= nil then frame = saved.frame end
+        if saved.glow ~= nil then glow = saved.glow end
+        if saved.light ~= nil then light = saved.light end
     end
     local frameOk = writeFrameValue(frame)
     local glowOk = writeGlowValue(glow, light)
     if frameOk or glowOk then refreshPage() end
+    if frameOk and glowOk then clearSnapshot() end
     if not frameOk then pointAtFrame(looksId(frame) or "daylight") end
-    if not glowOk then pointAtGlow("none") end
+    if not glowOk then pointAtGlowValue(saved and saved.glow or nil) end
 end
 
 local function slash(msg)
@@ -701,6 +749,7 @@ end
 local CARD = "Presets & Styles"
 local CARD_INTRO = "Presets pair a frame style and a glow style only. They never change colours in Palettes for DaylightUI."
 local PAGE_NOTE = "Starts off on first login · /looks"
+local PRESET_HEAD = "PRESETS"
 local FRAME_HEAD = "FRAME STYLES"
 local GLOW_HEAD = "GLOW STYLES"
 local RESTORE_LABEL = "Restore Daylight look"
@@ -717,15 +766,18 @@ local BOX_FILL = { 0.10, 0.10, 0.11, 1 }
 local BOX_ON = { 0.62, 0.52, 0.36, 1 }
 local ROW_ON = { 0.28, 0.24, 0.20, 0.95 }
 local HINT_EDGE = { 0.35, 0.32, 0.28, 1 }
+local CARD_EDGE = { 0.16, 0.16, 0.19, 1 }
+local CARD_FILL = { 0.12, 0.12, 0.14, 1 }
 
-local INTRO_H = 32
-local PRESET_H = 74
-local STYLE_H = 36
-local HEAD_H = 20
+local INTRO_H = 28
+local PRESET_HEAD_H = 18
+local PRESET_H = 88
+local STYLE_H = 26
+local HEAD_H = 18
 local HINT_H = 58
 
 local function sheetHeight()
-    local left = INTRO_H + #PRESETS * PRESET_H
+    local left = INTRO_H + PRESET_HEAD_H + #PRESETS * PRESET_H
     local right = INTRO_H + HEAD_H + #FRAMES * STYLE_H + HEAD_H + #GLOWS * STYLE_H + HINT_H + 8
     if right > left then return right + 8 end
     return left + 8
@@ -821,12 +873,31 @@ local function buildPage(row, sheet)
     local note = uiFont(row, 12, DIM)
     note:SetText(PAGE_NOTE)
     if type(note.SetJustifyH) == "function" then note:SetJustifyH("RIGHT") end
+    if type(note.SetWordWrap) == "function" then note:SetWordWrap(false) end
+    row.note = note
+
+    local function heading(text)
+        local fs = uiFont(row, 11, DIM)
+        fs:SetText(text)
+        return fs
+    end
+
+    local presetHead = heading(PRESET_HEAD)
+    row.presetHead = presetHead
 
     local presetRows = {}
     for i = 1, #sheet.presets do
         local preset = sheet.presets[i]
         local hold = CreateFrame("Frame", nil, row)
-        hold:SetHeight(PRESET_H)
+        hold:SetHeight(PRESET_H - 8)
+        flat(hold, "BACKGROUND", CARD_EDGE)
+        local fill = hold:CreateTexture(nil, "BORDER")
+        if type(fill.SetColorTexture) == "function" then
+            fill:SetColorTexture(CARD_FILL[1], CARD_FILL[2], CARD_FILL[3], 1)
+        end
+        fill:SetPoint("TOPLEFT", hold, "TOPLEFT", 1, -1)
+        fill:SetPoint("BOTTOMRIGHT", hold, "BOTTOMRIGHT", -1, 1)
+        hold.card = true
         local name = uiFont(hold, 14, CREAM)
         name:SetText(preset.name)
         local chip = CreateFrame("Frame", nil, hold)
@@ -849,15 +920,10 @@ local function buildPage(row, sheet)
         mood:SetWordWrap(true)
         local button = redButton(hold, "Apply", preset.apply)
         presetRows[#presetRows + 1] = {
-            hold = hold, name = name, chip = chip, mood = mood, button = button,
+            hold = hold, name = name, chip = chip, mood = mood, button = button, fill = fill,
         }
     end
-
-    local function heading(text)
-        local fs = uiFont(row, 11, DIM)
-        fs:SetText(text)
-        return fs
-    end
+    row.presets = presetRows
 
     local frameHead = heading(FRAME_HEAD)
     local glowHead = heading(GLOW_HEAD)
@@ -892,6 +958,8 @@ local function buildPage(row, sheet)
         name:SetText(entry.name)
         local desc = uiFont(hold, 11, DIM)
         desc:SetText(entry.desc)
+        if type(desc.SetWordWrap) == "function" then desc:SetWordWrap(false) end
+        if type(name.SetWordWrap) == "function" then name:SetWordWrap(false) end
         local key = uiFont(hold, 11, DIM)
         key:SetText(entry.key)
         local onText = uiFont(hold, 12, ON_INK)
@@ -903,6 +971,8 @@ local function buildPage(row, sheet)
             hold = hold,
             button = hold,
             box = box,
+            name = name,
+            desc = desc,
             selected = false,
         }
         function line.SetOn(on)
@@ -953,23 +1023,35 @@ local function buildPage(row, sheet)
         intro:ClearAllPoints()
         intro:SetPoint("TOPLEFT", row, "TOPLEFT", 0, 0)
         intro:SetWidth(leftW)
+        -- Daylight draws the card title on the row above this body. Lift the
+        -- note onto that title line, right-aligned. If the row has no parent
+        -- yet, the same lift is a positive offset on the body itself.
+        local anchor, nx, ny = row, 0, 22
+        if type(row.GetParent) == "function" then
+            local parent = row:GetParent()
+            if type(parent) == "table" then
+                anchor, nx, ny = parent, -12, -12
+            end
+        end
         note:ClearAllPoints()
-        note:SetPoint("TOPRIGHT", row, "TOPRIGHT", 0, -2)
-        local y = INTRO_H
+        note:SetPoint("TOPRIGHT", anchor, "TOPRIGHT", nx, ny)
+        presetHead:ClearAllPoints()
+        presetHead:SetPoint("TOPLEFT", row, "TOPLEFT", 0, -INTRO_H)
+        local y = INTRO_H + PRESET_HEAD_H
         for i = 1, #presetRows do
             local p = presetRows[i]
             p.hold:ClearAllPoints()
             p.hold:SetPoint("TOPLEFT", row, "TOPLEFT", 0, -y)
             p.hold:SetWidth(leftW)
             p.name:ClearAllPoints()
-            p.name:SetPoint("TOPLEFT", p.hold, "TOPLEFT", 0, -4)
+            p.name:SetPoint("TOPLEFT", p.hold, "TOPLEFT", 10, -10)
             p.chip:ClearAllPoints()
             p.chip:SetPoint("LEFT", p.name, "RIGHT", 8, 0)
             p.button:ClearAllPoints()
-            p.button:SetPoint("TOPRIGHT", p.hold, "TOPRIGHT", 0, -4)
+            p.button:SetPoint("TOPRIGHT", p.hold, "TOPRIGHT", -10, -10)
             p.mood:ClearAllPoints()
-            p.mood:SetPoint("TOPLEFT", p.hold, "TOPLEFT", 0, -26)
-            p.mood:SetWidth(leftW - 84)
+            p.mood:SetPoint("TOPLEFT", p.hold, "TOPLEFT", 10, -34)
+            p.mood:SetWidth(math.max(40, leftW - 108))
             y = y + PRESET_H
         end
         local function placeHead(fs, at)
@@ -987,10 +1069,11 @@ local function buildPage(row, sheet)
                 s.icon:ClearAllPoints()
                 s.icon:SetPoint("LEFT", s.box, "RIGHT", 8, 0)
                 s.name:ClearAllPoints()
-                s.name:SetPoint("TOPLEFT", s.hold, "TOPLEFT", 64, -2)
+                s.name:SetPoint("LEFT", s.icon, "RIGHT", 8, 0)
+                s.name:SetWidth(88)
                 s.desc:ClearAllPoints()
-                s.desc:SetPoint("TOPLEFT", s.hold, "TOPLEFT", 64, -16)
-                s.desc:SetWidth(math.max(40, rightW - 64 - 150))
+                s.desc:SetPoint("LEFT", s.name, "RIGHT", 8, 0)
+                s.desc:SetWidth(math.max(40, rightW - 14 - 36 - 88 - 150))
                 s.key:ClearAllPoints()
                 s.key:SetPoint("RIGHT", s.hold, "RIGHT", -4, 0)
                 s.onText:ClearAllPoints()
@@ -1105,6 +1188,8 @@ local function boot()
         card = CARD,
         intro = CARD_INTRO,
         note = PAGE_NOTE,
+        notePlace = "title",
+        presetHeading = PRESET_HEAD,
         frameHeading = FRAME_HEAD,
         glowHeading = GLOW_HEAD,
         hint = GLOW_HINT,

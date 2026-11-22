@@ -5,6 +5,7 @@
 ## Author: odd-brew
 ## Version: 0.2.0
 ## Dependencies: DaylightUI
+## SavedVariables: LooksDB
 ## X-Website: https://github.com/odd-brew/daylight-looks
 
 Looks.lua

@@ -21,10 +21,11 @@ local function readFile(path)
     return text
 end
 
-local function loadLooks(daylight)
+local function loadLooks(daylight, saved)
     local env = {
         DaylightUI = daylight,
         SlashCmdList = {},
+        LooksDB = saved,
     }
     local chat = {}
     env.DEFAULT_CHAT_FRAME = {
@@ -291,9 +292,7 @@ local function checkToc()
     has("## Author: odd-brew")
     has("## Version: 0.2.0")
     has("## Dependencies: DaylightUI")
-    if string.find(toc, "SavedVariables", 1, true) then
-        fail("toc must not own SavedVariables; settings stay in the Looks module")
-    end
+    has("## SavedVariables: LooksDB")
 end
 
 local function checkSource()
@@ -389,6 +388,8 @@ local function checkFresh()
     eq(footer.button, "Restore", "footer restore button")
     local sheet = body.sheet
     eq(sheet.note, "Starts off on first login · /looks", "top-right note")
+    eq(sheet.notePlace, "title", "note sits on the Presets & Styles title row")
+    eq(sheet.presetHeading, "PRESETS", "PRESETS label")
     eq(sheet.intro, "Presets pair a frame style and a glow style only. They never change colours in Palettes for DaylightUI.", "card intro")
     eq(sheet.frameHeading, "FRAME STYLES", "frame heading")
     eq(sheet.glowHeading, "GLOW STYLES", "glow heading")
@@ -409,16 +410,44 @@ local function checkFresh()
     eq(sheet.frames[4].desc, "A full portrait on a named board, power hung as a rail.", "trestle mood")
     eq(sheet.frames[4].key, "Looks:trestle", "trestle key on the row")
     eq(sheet.frames[7].desc, "A full boss, a thin health lip, and power carried in a deep trough underneath.", "trough mood")
-    eq(sheet.frames[7].icon[3][4] > sheet.frames[7].icon[2][4], true, "trough icon power is deeper than the bar")
+    local function tallest(icon, pred)
+        local best = 0
+        for p = 1, #icon do
+            if pred(icon[p]) and icon[p][4] > best then best = icon[p][4] end
+        end
+        return best
+    end
+    local troughIcon = sheet.frames[7].icon
+    eq(tallest(troughIcon, function(p) return p[1] >= 14 and p[2] >= 7 end)
+        > tallest(troughIcon, function(p) return p[1] >= 14 and p[2] < 7 end),
+        true, "trough icon power is deeper than the bar")
     eq(#sheet.glows, 3, "three glow rows")
     eq(sheet.glows[1].desc, "A quiet flame gathers at the corners.", "wick mood")
     eq(sheet.glows[1].key, "Looks:wick", "wick key on the row")
-    eq(#sheet.glows[1].icon, 4, "wick icon is four corners")
+    local function corners(icon)
+        local q = { false, false, false, false }
+        for p = 1, #icon do
+            if icon[p][3] <= 3 and icon[p][4] <= 1 then
+                local x, y = icon[p][1], icon[p][2]
+                if x < 18 and y < 9 then q[1] = true
+                elseif x >= 18 and y < 9 then q[2] = true
+                elseif x < 18 then q[3] = true
+                else q[4] = true end
+            end
+        end
+        return q[1] and q[2] and q[3] and q[4]
+    end
+    eq(corners(sheet.glows[1].icon), true, "wick icon marks four corners")
     eq(sheet.glows[2].desc, "A soft wash along the rim.", "draught mood")
     eq(sheet.glows[3].desc, "A short catch of light, then still.", "latch mood")
     for i = 1, #sheet.frames do
         local icon = sheet.frames[i].icon
         if type(icon) ~= "table" or #icon < 1 then fail(sheet.frames[i].id .. " has no preview icon") end
+        for p = 1, #icon do
+            if not (icon[p][3] <= 1 or icon[p][4] <= 1) then
+                fail(sheet.frames[i].id .. " icon is a filled block")
+            end
+        end
         for p = 1, #icon do
             for k = 1, 8 do
                 if type(icon[p][k]) ~= "number" then fail(sheet.frames[i].id .. " icon is not drawn from numbers") end
@@ -428,6 +457,11 @@ local function checkFresh()
     for i = 1, #sheet.glows do
         local icon = sheet.glows[i].icon
         if type(icon) ~= "table" or #icon < 1 then fail(sheet.glows[i].id .. " has no preview icon") end
+        for p = 1, #icon do
+            if not (icon[p][3] <= 1 or icon[p][4] <= 1) then
+                fail(sheet.glows[i].id .. " icon is a filled block")
+            end
+        end
     end
     eq(env.SLASH_LOOKS1, "/looks", "slash")
     slash(env, "")
@@ -661,7 +695,11 @@ local function newNode()
     function f:SetWidth(w) f.w = w end
     function f:SetHeight(h) f.h = h end
     function f:GetWidth() return f.w end
-    function f:SetPoint() end
+    function f:SetPoint(...)
+        local args = {}
+        for i = 1, select("#", ...) do args[i] = select(i, ...) end
+        f.point = args
+    end
     function f:ClearAllPoints() end
     function f:SetAllPoints() end
     function f:SetScript(name, fn) f.scripts[name] = fn end
@@ -766,7 +804,48 @@ local function checkApply()
     eq(kept.settings["general.buttonGlow"], "comet", "restore puts the original glow back")
     eq(kept.settings["Nameplates.targetLight"], "shine", "restore puts the original outline back")
     eq(kept.frame.parts.style, "ribbon", "the worn frame follows the snapshot")
+    eq(keptEnv.LooksDB.original, nil, "a successful restore clears the snapshot")
     assertWrites(kept, "snapshot")
+
+    local again, envA = prior("ribbon", "comet", "shine")
+    slash(envA, "lintel")
+    eq(envA.LooksDB.original.frame, "ribbon", "the snapshot keeps the frame across the saved table")
+    eq(envA.LooksDB.original.glow, "comet", "the snapshot keeps the glow across the saved table")
+    eq(envA.LooksDB.original.light, "shine", "the snapshot keeps the outline across the saved table")
+    local envB = loadLooks(again, envA.LooksDB)
+    slash(envB, "off")
+    eq(again.settings["UnitFrames.look.style"], "ribbon", "a reload still restores the frame")
+    eq(again.settings["general.buttonGlow"], "comet", "a reload still restores the glow")
+    eq(again.settings["Nameplates.targetLight"], "shine", "a reload still restores the outline")
+    eq(envB.LooksDB.original, nil, "the reloaded restore clears the snapshot")
+    slash(envB, "off")
+    eq(again.settings["UnitFrames.look.style"], "daylight", "after the snapshot is cleared, restore uses Daylight")
+    eq(again.settings["general.buttonGlow"], "circle", "after the snapshot is cleared, restore uses Circling")
+
+    local stuck, envStuck, chatStuck = prior("ribbon", "comet", "shine")
+    slash(envStuck, "lintel")
+    local stuckSet = stuck.Set
+    function stuck:Set(scope, path, value)
+        if scope == "general" or scope == "Nameplates" then return false end
+        return stuckSet(self, scope, path, value)
+    end
+    slash(envStuck, "off")
+    eq(last(chatStuck), "Looks: pick comet in the glow menu.", "a failed glow restore names the saved glow")
+    eq(type(envStuck.LooksDB.original), "table", "a failed glow restore keeps the snapshot")
+
+    local half = newDaylight(9)
+    armApply(half, "set")
+    local halfSet = half.Set
+    function half:Set(scope, path, value)
+        if scope == "Nameplates" then return false end
+        return halfSet(self, scope, path, value)
+    end
+    local envHalf, chatHalf = loadLooks(half)
+    slash(envHalf, "wick")
+    eq(last(chatHalf), PICK_WICK, "a glow apply reports success only when both settings stick")
+    eq(half.buttonGlow, "Looks:wick", "the button glow still writes")
+    eq(half.targetLight, "none", "the outline stayed put")
+    eq(envHalf.LooksDB.original.glow, "circle", "a partial glow write still keeps the snapshot")
 
     local row = newNode()
     env.CreateFrame = function(kind)
@@ -789,6 +868,13 @@ local function checkApply()
     end
     eq(lintel.selected, true, "built row highlights the worn frame")
     eq(wick.selected, true, "built row highlights the worn glow")
+    eq(row.presetHead.text, "PRESETS", "the page draws the PRESETS label")
+    eq(row.note.point[1], "TOPRIGHT", "the note is right-aligned")
+    eq(row.note.point[5], 22, "the note sits on the Presets & Styles title row")
+    eq(row.presets[1].hold.card, true, "a preset row is a card")
+    eq(row.presets[1].hold.h, 80, "a preset card keeps padding")
+    eq(lintel.name.point[1], "LEFT", "the frame name sits on the row")
+    eq(lintel.desc.point[1], "LEFT", "the description sits on the same line")
     local beforeClick = #d.writes
     lintel.box.scripts.OnClick()
     if #d.writes <= beforeClick then fail("clicking the select box did not apply") end
@@ -815,6 +901,7 @@ local function checkApply()
     slash(envRefused, "signboard")
     eq(last(chatRefused), "Looks: pick Signboard in the Frame style menu.", "a refused write falls back")
     noWrites(refused, "refused write")
+    eq(envRefused.LooksDB, nil, "a refused write does not take a snapshot")
 
     local menu = newDaylight(9)
     armApply(menu, "menu")

@@ -1,13 +1,13 @@
 # Changelog
 
-## [0.2.0] - Unreleased
+## [0.2.0] - 2026-11-22
 
 ### Added
 - Glow styles (ODB-157): Wick, Draught and Latch, in Daylight's glow menus and on Plugins > Looks. They sit beside Daylight's built-in glows. Glow colour follows the accent.
 - Frame styles (ODB-159): Trestle, Flagon, Signboard and Trough, with Lintel, Sill and Stamp. Trough's power line is taller than its health bar. Daylight does not clamp that line, so Trough ships.
 - Presets (ODB-158): Hearthnight, Harvestide, Tidemark, Old Road and Vigil. Each is one frame style and one glow. A preset does not change Palettes or the accent.
 - Select and apply on Plugins > Looks. The page is a Presets & Styles card: pair chips and Apply on the left, and on the right a select box, a drawn icon, the name, the description and the key. The current pick is highlighted and marked [On]. `/looks lintel`, `/looks wick` and `/looks hearthnight` use the same apply path. If Daylight cannot take the write, chat names the menu and nothing errors.
-- Restore puts back the frame style, the main-button glow and the target outline light from before Looks first changed them. If Looks has not changed them, Restore uses Daylight's own defaults. Restore is in the header and the footer.
+- Restore puts back the frame style, the main-button glow and the target outline light from before Looks first changed them. That snapshot is saved in LooksDB, so a reload still has it, and a successful Restore clears it. If Looks has not changed them, Restore uses Daylight's own defaults. Restore is in the header and the footer.
 
 ## [0.1.0] - 2026-11-22
 
