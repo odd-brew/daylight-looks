@@ -1,6 +1,6 @@
 # Looks (DaylightUI Plugin)
 
-Looks adds frame styles to [DaylightUI](https://github.com/dayightt/DaylightUI). Colors stay in [Palettes](https://github.com/odd-brew/daylight-palettes), or in Daylight if Palettes is off.
+Add frame styles and glow styles to Daylight. Colors stay in Palettes for DaylightUI, or in Daylight if Palettes for DaylightUI is off.
 
 This version is 0.1.0. It adds three frame styles: Lintel, Sill and Stamp. It does not add glow styles or presets yet.
 

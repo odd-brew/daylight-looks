@@ -159,7 +159,7 @@ local function checkFresh()
     eq(d.plugins[1].off, false, "plugin starts available")
     local page = d.modules.Looks.options.pages[1]
     eq(page.label, "Looks", "page title")
-    eq(page.desc, "Add frame styles and glow styles to Daylight. Colors stay in Palettes, or in Daylight if Palettes is off.", "page desc")
+    eq(page.desc, "Add frame styles and glow styles to Daylight. Colors stay in Palettes for DaylightUI, or in Daylight if Palettes for DaylightUI is off.", "page desc")
     local button = page.groups[1].items[4]
     eq(button.text, "Restore", "button text")
     eq(button.label, "Restore Daylight look", "button meaning")
