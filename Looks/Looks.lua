@@ -4,7 +4,7 @@
 -- private write is ns.SetStyle in DaylightUI_UnitFrames, which saves UnitFrames
 -- settings. This file never calls that, and never writes those settings.
 
-local PAGE = "Add frame styles and glow styles to Daylight. Colors stay in Palettes for DaylightUI, or in Daylight if Palettes for DaylightUI is off."
+local PAGE = "Add frame styles to Daylight. Colors stay in Palettes for DaylightUI, or in Daylight if Palettes for DaylightUI is off."
 local TOO_OLD = "Looks: Daylight UI is missing the settings Looks needs, so no frame or glow styles were added."
 
 local STYLES = {
