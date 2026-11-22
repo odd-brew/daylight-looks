@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.1.0] - Unreleased
+## [0.1.0] - 2026-11-22
 
 ### Added
 - Looks (DaylightUI Plugin) for World of Warcraft: Forever. It starts off. A fresh install does not change your frames.
