@@ -3,7 +3,7 @@
 ## Title: Looks (DaylightUI Plugin)
 ## Notes: Add frame styles and glow styles to Daylight. Colors stay in Palettes for DaylightUI, or in Daylight if Palettes for DaylightUI is off.
 ## Author: odd-brew
-## Version: 0.1.0
+## Version: 0.2.0
 ## Dependencies: DaylightUI
 ## X-Website: https://github.com/odd-brew/daylight-looks
 
